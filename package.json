@@ -1,7 +1,7 @@
 {
   "name": "@drpiou/react-axios",
   "version": "0.0.1",
-  "description": "Provides some React utilities that wrap the `@drpiou/axios` package.",
+  "description": "Provides some React utilities that wrap the @drpiou/axios package.",
   "keywords": [],
   "author": "Alex <dr.piou@gmail.com>",
   "homepage": "https://github.com/drpiou/react-axios#readme",
