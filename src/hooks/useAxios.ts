@@ -1,39 +1,77 @@
-import { AxiosConfig, AxiosOptions, AxiosRequestAbort, AxiosResponseRequest, prepareAxios } from '@drpiou/axios';
+import {
+  AxiosConfig,
+  AxiosOptions,
+  AxiosRequest,
+  AxiosRequestAbort,
+  AxiosRequestData,
+  AxiosRequestDataOptional,
+  AxiosRequestDataVoid,
+  AxiosResponseRequest,
+} from '@drpiou/axios';
 import { useIsMounted, useOnUnmount } from '@drpiou/react-utils';
 import { withoutProperties } from '@drpiou/ts-utils';
 import map from 'lodash/map';
+import mapValues from 'lodash/mapValues';
 import uniqueId from 'lodash/uniqueId';
-import React from 'react';
+import { useMemo, useRef } from 'react';
 
-export type UseAxiosOptions<BD = unknown, SD = any, ED = any, CD = any> = {
-  onAfter?: UseAxiosCallbackAfter<BD, SD, ED, CD>;
-  onBefore?: UseAxiosCallbackBefore<BD, SD, ED, CD>;
+export type UseAxiosOptions<AO = unknown, BD = unknown, SD = any, ED = any, CD = any> = {
+  onAfter?: UseAxiosCallbackAfter<AO, BD, SD, ED, CD>;
+  onBefore?: UseAxiosCallbackBefore<AO, BD, SD, ED>;
 };
 
 export type UseAxiosRequestOptions<SD = any, ED = any> = AxiosOptions<SD, ED> & {
   autoAbort?: boolean;
 };
 
-export type UseAxiosCallbackAfter<BD = unknown, SD = any, ED = any, CD = any> = (
+export type UseAxiosCallbackAfter<AO = unknown, BD = unknown, SD = any, ED = any, CD = any> = (
   response: AxiosResponseRequest<SD, ED, CD>,
   before: BD | undefined,
-  config: AxiosConfig<CD>,
-  options?: UseAxiosRequestOptions<SD, ED>,
+  apiOptions?: AO,
+  configOptions?: UseAxiosRequestOptions<SD, ED>,
 ) => void | Promise<void>;
 
-export type UseAxiosCallbackBefore<BD = unknown, SD = any, ED = any, CD = any> = (
-  config: AxiosConfig<CD>,
-  options?: UseAxiosRequestOptions<SD, ED>,
+export type UseAxiosCallbackBefore<AO = unknown, BD = unknown, SD = any, ED = any> = (
+  apiOptions?: AO,
+  configOptions?: UseAxiosRequestOptions<SD, ED>,
 ) => BD | Promise<BD>;
 
-export type UseAxiosRequest = <SD = any, ED = any, CD = any>(
-  config: AxiosConfig<CD>,
-  options?: UseAxiosRequestOptions<SD, ED>,
-) => Promise<AxiosResponseRequest<SD, ED>>;
+export type UseAxiosRequest<CD = any, SD = any, ED = any> =
+  | AxiosRequestData<CD, SD, ED>
+  | AxiosRequestDataOptional<CD, SD, ED>
+  | AxiosRequestDataVoid<SD, ED>;
 
-export type UseAxios = {
-  request: UseAxiosRequest;
+export type UseAxiosRequestData<SD = any, ED = any, CD = any, AO = unknown> = (
+  data: CD,
+  apiOptions?: AO,
+  configOptions?: UseAxiosRequestOptions<SD, ED>,
+) => Promise<AxiosResponseRequest<SD, ED, CD> | undefined>;
+
+export type UseAxiosRequestDataOptional<SD = any, ED = any, CD = any, AO = unknown> = (
+  data?: CD | null,
+  apiOptions?: AO,
+  configOptions?: UseAxiosRequestOptions<SD, ED>,
+) => Promise<AxiosResponseRequest<SD, ED, CD> | undefined>;
+
+export type UseAxiosRequestDataVoid<SD = any, ED = any, AO = unknown> = (
+  data?: null,
+  apiOptions?: AO,
+  configOptions?: UseAxiosRequestOptions<SD, ED>,
+) => Promise<AxiosResponseRequest<SD, ED> | undefined>;
+
+export type UseAxios<A, AO = unknown> = {
+  [K in keyof A]: A[K] extends AxiosRequestDataVoid<infer SD, infer ED>
+    ? UseAxiosRequestDataVoid<SD, ED, AO>
+    : A[K] extends AxiosRequestDataOptional<infer CD, infer SD, infer ED>
+    ? UseAxiosRequestDataOptional<SD, ED, CD, AO>
+    : A[K] extends AxiosRequestData<infer CD, infer SD, infer ED>
+    ? UseAxiosRequestData<SD, ED, CD, AO>
+    : A[K] extends (config: AxiosConfig, options?: AxiosOptions | undefined) => AxiosRequest
+    ? <SD, ED, CD>(data: AxiosConfig<CD>, apiOptions?: AO, options?: AxiosOptions<SD, ED>) => AxiosRequest<SD, ED, CD>
+    : never;
 };
+
+export type UseAxiosList = Record<string, UseAxiosRequest>;
 
 const DEFAULT_OPTIONS: UseAxiosRequestOptions = {
   autoAbort: false,
@@ -41,46 +79,47 @@ const DEFAULT_OPTIONS: UseAxiosRequestOptions = {
 
 const defaultOptionsKeys = Object.keys(DEFAULT_OPTIONS);
 
-const useAxios = <BD = unknown>(options?: UseAxiosOptions<BD>): UseAxios => {
-  const controllers = React.useRef<{ [key: string]: AxiosRequestAbort }>({});
+const useAxios = <A extends UseAxiosList, AO = unknown, BD = unknown>(
+  api: A,
+  options?: UseAxiosOptions<AO, BD>,
+): UseAxios<A, AO> => {
+  const controllers = useRef<{ [key: string]: AxiosRequestAbort }>({});
 
   const isMounted = useIsMounted();
 
-  const requestAxios = React.useCallback(
-    async <CD = any, SD = any, ED = any>(
-      config: AxiosConfig<CD>,
-      configOptions?: UseAxiosRequestOptions<SD, ED>,
-    ): Promise<AxiosResponseRequest<SD, ED, CD>> => {
-      const axiosId = uniqueId('axios:');
+  const requests = useMemo(() => {
+    return mapValues(api, (apiRequest) => {
+      return async (data?: any, apiOptions?: AO, configOptions?: UseAxiosRequestOptions): Promise<AxiosResponseRequest> => {
+        const apiId = uniqueId('api:');
 
-      const requestOptions = { ...DEFAULT_OPTIONS, ...configOptions } as UseAxiosRequestOptions<SD, ED>;
+        const requestOptions: UseAxiosRequestOptions = { ...DEFAULT_OPTIONS, ...configOptions };
 
-      const request = prepareAxios<SD, ED, CD>(config, withoutProperties(requestOptions, defaultOptionsKeys));
+        const request = apiRequest(data, withoutProperties(requestOptions, defaultOptionsKeys));
 
-      let before: BD | undefined = undefined;
+        let before: BD | undefined = undefined;
 
-      if (typeof options?.onBefore === 'function') {
-        before = await options?.onBefore(config, configOptions);
-      }
+        if (typeof options?.onBefore === 'function') {
+          before = await options?.onBefore(apiOptions, requestOptions);
+        }
 
-      if (requestOptions.autoAbort) {
-        controllers.current[axiosId] = request.abort;
-      }
+        if (requestOptions.autoAbort) {
+          controllers.current[apiId] = request.abort;
+        }
 
-      const response = await request.start({
-        abort: requestOptions.autoAbort && !isMounted.current,
-      });
+        const response = await request.start({
+          abort: requestOptions.autoAbort && !isMounted.current,
+        });
 
-      delete controllers.current[axiosId];
+        delete controllers.current[apiId];
 
-      if (typeof options?.onAfter === 'function') {
-        await options?.onAfter(response, before, config, configOptions);
-      }
+        if (typeof options?.onAfter === 'function') {
+          await options?.onAfter(response, before, apiOptions, requestOptions);
+        }
 
-      return response;
-    },
-    [isMounted, options],
-  );
+        return response as AxiosResponseRequest;
+      };
+    });
+  }, [api, isMounted, options]);
 
   useOnUnmount(() => {
     map(controllers.current, (abort) => {
@@ -88,12 +127,7 @@ const useAxios = <BD = unknown>(options?: UseAxiosOptions<BD>): UseAxios => {
     });
   });
 
-  return React.useMemo(
-    () => ({
-      request: requestAxios,
-    }),
-    [requestAxios],
-  );
+  return requests as UseAxios<A, AO>;
 };
 
 export default useAxios;
