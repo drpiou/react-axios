@@ -242,15 +242,15 @@
 
 "@drpiou/axios@https://github.com/drpiou/axios.git#hotfix/vite-integration":
   version "0.0.3"
-  resolved "https://github.com/drpiou/axios.git#b99875ea46319d25cffc9ceeb2df0e204097233e"
+  resolved "https://github.com/drpiou/axios.git#14d68fff9c3b128d66c832e784aa415d874b07ed"
 
 "@drpiou/react-utils@https://github.com/drpiou/react-utils.git#hotfix/vite-integration":
-  version "0.0.2"
-  resolved "https://github.com/drpiou/react-utils.git#c7caa54c29f2bd2c6b071ab1102e2b423ee014d2"
+  version "0.0.3"
+  resolved "https://github.com/drpiou/react-utils.git#df26f726c69b7349d216adcc7c2420f3fc560487"
 
 "@drpiou/ts-utils@https://github.com/drpiou/ts-utils.git#hotfix/vite-integration":
   version "0.0.3"
-  resolved "https://github.com/drpiou/ts-utils.git#93bd52d76ec8a494006475b47a0f3e4ab04d17c9"
+  resolved "https://github.com/drpiou/ts-utils.git#ef04347d04f50e8aee8395fdeaa1c2fce559716f"
 
 "@esbuild/linux-loong64@0.14.53":
   version "0.14.53"
