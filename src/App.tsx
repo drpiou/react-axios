@@ -1,13 +1,12 @@
-import './App.css'
+import React from 'react';
+import './App.css';
 
-function App() {
+const App = (): JSX.Element => {
   return (
-    <div className="App">
-      <div className="card">
-        <span id="counter">test...</span>
-      </div>
+    <div className="card">
+      <span id="counter">test...</span>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

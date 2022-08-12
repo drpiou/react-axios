@@ -1,8 +1,8 @@
 # `@drpiou/react-axios`
 
-![GitHub](https://img.shields.io/github/license/drpiou/react-axios)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/drpiou/react-axios)
-![Jest tests](https://img.shields.io/badge/stage-experimental-important)
+![Licence](https://img.shields.io/github/license/drpiou/react-axios)
+![Package.json version](https://img.shields.io/github/package-json/v/drpiou/react-axios)
+![Stage](https://img.shields.io/badge/stage-experimental-important)
 
 The `@drpiou/react-axios` package provides a React api context around the `@drpiou/axios` package.
 

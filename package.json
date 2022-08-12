@@ -1,6 +1,6 @@
 {
   "name": "@drpiou/react-axios",
-  "version": "0.0.4",
+  "version": "0.0.3",
   "description": "Provides some React utilities that wrap the @drpiou/axios package.",
   "keywords": [],
   "author": "Alex <hello@drpiou.dev>",
@@ -36,8 +36,8 @@
     "toc": "gh-md-toc --insert"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@drpiou/axios": ">=0.0.0",
+    "react": "^17.0.2 || ^18.0.0"
   },
   "devDependencies": {
     "@drpiou/axios": "https://github.com/drpiou/axios.git#hotfix/vite-integration",
@@ -45,15 +45,26 @@
     "@drpiou/ts-utils": "https://github.com/drpiou/ts-utils.git#hotfix/vite-integration",
     "@types/lodash": "^4.14.182",
     "@types/node": "^18.6.4",
-    "@types/react": "^18.0.15",
-    "@types/react-dom": "^18.0.6",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.22.0",
+    "@typescript-eslint/parser": "^5.22.0",
     "@vitejs/plugin-react": "^2.0.0",
     "axios": "^0.27.2",
+    "eslint": "^8.14.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.5.0",
     "lodash": "^4.17.21",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "prettier": "^2.6.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "typescript": "^4.6.4",
     "vite": "^3.0.0",
     "vite-plugin-dts": "^1.4.1"
+  },
+  "resolutions": {
+    "@types/react": "^17.0.48",
+    "@types/react-dom": "^17.0.17"
   }
 }

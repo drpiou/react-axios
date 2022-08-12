@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - bump `@drpiou/axios` dependency to `0.0.3`
+- internal changes
 
 ## [0.0.2] - 2022-07-11
 
