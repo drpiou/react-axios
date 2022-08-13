@@ -240,17 +240,20 @@
     "@babel/helper-validator-identifier" "^7.18.6"
     to-fast-properties "^2.0.0"
 
-"@drpiou/axios@https://github.com/drpiou/axios.git#develop":
+"@drpiou/axios@0.0.3":
   version "0.0.3"
-  resolved "https://github.com/drpiou/axios.git#e4c696baaab51390bc4ecb9e4c5e6009dee16665"
+  resolved "https://registry.yarnpkg.com/@drpiou/axios/-/axios-0.0.3.tgz#6ccc5f04e443510ad641dac210f9191e8b276b06"
+  integrity sha512-v6DOsOY8ylW4yj/08sED2fuuoBeoTsGkSozD1lPBXjSKGKSL4vMaxLch5qYKcGkgthRbuyLiYrnxLpEtLxp72A==
 
-"@drpiou/react-utils@https://github.com/drpiou/react-utils.git#develop":
+"@drpiou/react-utils@0.0.3":
   version "0.0.3"
-  resolved "https://github.com/drpiou/react-utils.git#eddf4fa85d9f8b424aaa36c50b7923c6d6e4a09c"
+  resolved "https://registry.yarnpkg.com/@drpiou/react-utils/-/react-utils-0.0.3.tgz#4570be1a56a432f6a668153a7967c5acaf48a4a0"
+  integrity sha512-yrjcvqgiN4Va40B7ACzoTrlAuL6pq08X1aoEqpj3MGhjdzjg7f1hdHQOoq5qOXDGmtDpcMhiUHNrdyJoRStu2w==
 
-"@drpiou/ts-utils@https://github.com/drpiou/ts-utils.git#develop":
+"@drpiou/ts-utils@0.0.3":
   version "0.0.3"
-  resolved "https://github.com/drpiou/ts-utils.git#ef04347d04f50e8aee8395fdeaa1c2fce559716f"
+  resolved "https://registry.yarnpkg.com/@drpiou/ts-utils/-/ts-utils-0.0.3.tgz#60b0c53133f14ad98602bf89eff6bd8b3aecf38e"
+  integrity sha512-iC5geBIyyNNwbjjGNrFRg86z4pXHZT8BC82x+bKCJGIl7Nn40wZ8FhFiOSwgUqoslkTTtdUEYXlrHYVQvTT/Gg==
 
 "@esbuild/linux-loong64@0.14.53":
   version "0.14.53"
