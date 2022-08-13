@@ -1,3 +1,4 @@
+import { log } from '@drpiou/ts-utils';
 import { useMemo } from 'react';
 import { useAxios, UseAxios, UseAxiosCallbackAfter, UseAxiosCallbackBefore } from '../../lib';
 import { api, ApiList } from '../api';
@@ -11,13 +12,13 @@ type Before = {
 };
 
 const onBefore: UseAxiosCallbackBefore<UseApiOptions, Before> = (apiOptions, configOptions) => {
-  console.log('useApi@onBefore:', { apiOptions, configOptions });
+  log('useApi@onBefore:', { apiOptions, configOptions });
 
   return { message: apiOptions?.message || '' };
 };
 
 const onAfter: UseAxiosCallbackAfter<UseApiOptions, Before> = (response, before, apiOptions, configOptions) => {
-  console.log('useApi@onAfter:', { response, before, apiOptions, configOptions });
+  log('useApi@onAfter:', { response, before, apiOptions, configOptions });
 };
 
 export const useApi = (): UseAxios<ApiList, UseApiOptions> => {

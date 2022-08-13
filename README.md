@@ -58,38 +58,45 @@ export const useApi = (): UseAxios<ApiList> => {
 
 ### `hooks/useApi.ts`
 
-```typescript jsx
-import { api, ApiList } from '@/src/api';
+```typescript
+import { log } from '@drpiou/ts-utils';
+import { useMemo } from 'react';
 import {
-  UseAxios,
   useAxios,
+  UseAxios,
   UseAxiosCallbackAfter,
+  UseAxiosCallbackBefore,
 } from '@drpiou/react-axios';
+import { api, ApiList } from '../api';
 
 export type UseApiOptions = {
-  showNotification?: boolean;
+  message?: string;
 };
 
-export type UseApiCallbackAfter = UseAxiosCallbackAfter<UseApiOptions>;
+type Before = {
+  message: string;
+};
+
+const onBefore: UseAxiosCallbackBefore<UseApiOptions, Before> = (
+  apiOptions,
+  configOptions,
+) => {
+  log('useApi@onBefore:', { apiOptions, configOptions });
+
+  return { message: apiOptions?.message || '' };
+};
+
+const onAfter: UseAxiosCallbackAfter<UseApiOptions, Before> = (
+  response,
+  before,
+  apiOptions,
+  configOptions,
+) => {
+  log('useApi@onAfter:', { response, before, apiOptions, configOptions });
+};
 
 export const useApi = (): UseAxios<ApiList, UseApiOptions> => {
-  const notification = useNotification();
-
-  const callbackAfter: UseApiCallbackAfter = useCallback(
-    (response, before, apiOptions) => {
-      if (apiOptions?.showNotification) {
-        notification.show(response.isError ? 'error' : 'success');
-      }
-    },
-    [notification],
-  );
-
-  const options = useMemo(
-    () => ({
-      onAfter: callbackAfter,
-    }),
-    [callbackBefore],
-  );
+  const options = useMemo(() => ({ onBefore, onAfter }), []);
 
   return useAxios(api, options);
 };
@@ -98,37 +105,37 @@ export const useApi = (): UseAxios<ApiList, UseApiOptions> => {
 ### `api/index.ts`
 
 ```typescript
-import { getTranslation } from '@/api/getTranslation';
+import { getAgify } from './getAgify';
+import { request } from './request';
 
 export type ApiList = typeof api;
 
 export type ApiKey = keyof ApiList;
 
 export const api = {
-  getTranslation,
+  getAgify,
+  request,
 };
 ```
 
-### `api/getTranslation.ts`
+### `api/getAgify.ts`
 
 ```typescript
-import { requestApi } from '@/api/requestApi';
 import { AxiosRequestData } from '@drpiou/axios';
+import { request } from './request';
 
-export type ApiTranslationData = {
-  lang_code: string;
+export type ApiAgifyData = {
+  name: string;
 };
 
 export type ApiTranslationResponseData = Record<string, unknown>;
 
-export const getTranslation: AxiosRequestData<
-  ApiTranslationData,
+export const getAgify: AxiosRequestData<
+  ApiAgifyData,
   ApiTranslationResponseData
 > = (data, options) => {
-  return requestApi(
+  return request(
     {
-      url: 'translation',
-      method: 'GET',
       params: data,
     },
     options,
@@ -136,15 +143,15 @@ export const getTranslation: AxiosRequestData<
 };
 ```
 
-### `api/requestApi.ts`
+### `api/request.ts`
 
 ```typescript
 import { prepareAxios } from '@drpiou/axios';
 
-export const requestApi: typeof prepareAxios = (config, options) => {
+export const request: typeof prepareAxios = (config, options) => {
   return prepareAxios(
     {
-      baseURL: 'https://api.domain.com',
+      baseURL: 'https://api.agify.io',
       ...config,
       headers: {
         Accept: 'application/json',
@@ -152,7 +159,10 @@ export const requestApi: typeof prepareAxios = (config, options) => {
         ...config?.headers,
       },
     },
-    options,
+    {
+      ...options,
+      log: 'verbose',
+    },
   );
 };
 ```
@@ -166,9 +176,9 @@ const MyComponent = (): JSX.Element => {
   const api = useApi();
 
   const handlePress = (): void => {
-    void api.getTranslation(
-      { lang_code: 'fr' },
-      { showNotification: true },
+    void api.getAgify(
+      { name: 'test' },
+      { message: 'test' },
       { autoAbort: true },
     );
   };
@@ -182,12 +192,12 @@ export default MyComponent;
 ## Documentation
 
 ```typescript
-type useAxios = <A extends UseAxiosList, AO = unknown, BD = unknown>(
+export type useAxios = <A extends UseAxiosList, AO = unknown, BD = unknown>(
   api: A,
   options?: UseAxiosOptions<AO, BD>,
 ) => UseAxios<A, AO>;
 
-type UseAxiosOptions<
+export type UseAxiosOptions<
   AO = unknown,
   BD = unknown,
   SD = any,
@@ -198,11 +208,14 @@ type UseAxiosOptions<
   onBefore?: UseAxiosCallbackBefore<AO, BD, SD, ED>;
 };
 
-type UseAxiosRequestOptions<SD = any, ED = any> = AxiosOptions<SD, ED> & {
+export type UseAxiosRequestOptions<SD = any, ED = any> = AxiosOptions<
+  SD,
+  ED
+> & {
   autoAbort?: boolean;
 };
 
-type UseAxiosCallbackAfter<
+export type UseAxiosCallbackAfter<
   AO = unknown,
   BD = unknown,
   SD = any,
@@ -215,35 +228,45 @@ type UseAxiosCallbackAfter<
   configOptions?: UseAxiosRequestOptions<SD, ED>,
 ) => void | Promise<void>;
 
-type UseAxiosCallbackBefore<AO = unknown, BD = unknown, SD = any, ED = any> = (
+export type UseAxiosCallbackBefore<
+  AO = unknown,
+  BD = unknown,
+  SD = any,
+  ED = any,
+> = (
   apiOptions?: AO,
   configOptions?: UseAxiosRequestOptions<SD, ED>,
 ) => BD | Promise<BD>;
 
-type UseAxiosRequest<CD = any, SD = any, ED = any> =
+export type UseAxiosRequest<CD = any, SD = any, ED = any> =
   | AxiosRequestData<CD, SD, ED>
   | AxiosRequestDataOptional<CD, SD, ED>
   | AxiosRequestDataVoid<SD, ED>;
 
-type UseAxiosRequestData<SD = any, ED = any, CD = any, AO = unknown> = (
+export type UseAxiosRequestData<SD = any, ED = any, CD = any, AO = unknown> = (
   data: CD,
   apiOptions?: AO,
   configOptions?: UseAxiosRequestOptions<SD, ED>,
 ) => Promise<AxiosResponseRequest<SD, ED, CD> | undefined>;
 
-type UseAxiosRequestDataOptional<SD = any, ED = any, CD = any, AO = unknown> = (
+export type UseAxiosRequestDataOptional<
+  SD = any,
+  ED = any,
+  CD = any,
+  AO = unknown,
+> = (
   data?: CD | null,
   apiOptions?: AO,
   configOptions?: UseAxiosRequestOptions<SD, ED>,
 ) => Promise<AxiosResponseRequest<SD, ED, CD> | undefined>;
 
-type UseAxiosRequestDataVoid<SD = any, ED = any, AO = unknown> = (
+export type UseAxiosRequestDataVoid<SD = any, ED = any, AO = unknown> = (
   data?: null,
   apiOptions?: AO,
   configOptions?: UseAxiosRequestOptions<SD, ED>,
 ) => Promise<AxiosResponseRequest<SD, ED> | undefined>;
 
-type UseAxios<A, AO = unknown> = {
+export type UseAxios<A, AO = unknown> = {
   [K in keyof A]: A[K] extends AxiosRequestDataVoid<infer SD, infer ED>
     ? UseAxiosRequestDataVoid<SD, ED, AO>
     : A[K] extends AxiosRequestDataOptional<infer CD, infer SD, infer ED>
@@ -262,5 +285,5 @@ type UseAxios<A, AO = unknown> = {
     : never;
 };
 
-type UseAxiosList = Record<string, UseAxiosRequest>;
+export type UseAxiosList = Record<string, UseAxiosRequest>;
 ```

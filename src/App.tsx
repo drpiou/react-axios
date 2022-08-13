@@ -150,7 +150,7 @@ const Result = (props: { response: AxiosResponseRequest | undefined; expected: b
   const { response, expected } = props;
 
   return (
-    <p className={`result ${expected ? 'success' : 'error'}`}>
+    <div className={`result ${expected ? 'success' : 'error'}`}>
       <div>
         <span>status: </span>
         <span>{response?.isError ? 'error' : 'success'}</span>
@@ -197,7 +197,7 @@ const Result = (props: { response: AxiosResponseRequest | undefined; expected: b
         <span>result: </span>
         <span>{expected ? 'success' : 'error'}</span>
       </div>
-    </p>
+    </div>
   );
 };
 

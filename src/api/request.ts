@@ -11,6 +11,9 @@ export const request: typeof prepareAxios = (config, options) => {
         ...config?.headers,
       },
     },
-    options,
+    {
+      ...options,
+      log: 'verbose',
+    },
   );
 };
