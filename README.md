@@ -59,7 +59,6 @@ export const useApi = (): UseAxios<ApiList> => {
 ### `hooks/useApi.ts`
 
 ```typescript
-import { log } from '@drpiou/ts-utils';
 import { useMemo } from 'react';
 import {
   useAxios,
@@ -81,7 +80,7 @@ const onBefore: UseAxiosCallbackBefore<UseApiOptions, Before> = (
   apiOptions,
   configOptions,
 ) => {
-  log('useApi@onBefore:', { apiOptions, configOptions });
+  console.log('useApi@onBefore:', { apiOptions, configOptions });
 
   return { message: apiOptions?.message || '' };
 };
@@ -92,7 +91,7 @@ const onAfter: UseAxiosCallbackAfter<UseApiOptions, Before> = (
   apiOptions,
   configOptions,
 ) => {
-  log('useApi@onAfter:', { response, before, apiOptions, configOptions });
+  console.log('useApi@onAfter:', { response, before, apiOptions, configOptions });
 };
 
 export const useApi = (): UseAxios<ApiList, UseApiOptions> => {
@@ -128,11 +127,11 @@ export type ApiAgifyData = {
   name: string;
 };
 
-export type ApiTranslationResponseData = Record<string, unknown>;
+export type ApiAgifyResponseData = Record<string, unknown>;
 
 export const getAgify: AxiosRequestData<
   ApiAgifyData,
-  ApiTranslationResponseData
+  ApiAgifyResponseData
 > = (data, options) => {
   return request(
     {

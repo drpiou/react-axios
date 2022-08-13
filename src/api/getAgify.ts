@@ -5,9 +5,9 @@ export type ApiAgifyData = {
   name: string;
 };
 
-export type ApiTranslationResponseData = Record<string, unknown>;
+export type ApiAgifyResponseData = Record<string, unknown>;
 
-export const getAgify: AxiosRequestData<ApiAgifyData, ApiTranslationResponseData> = (data, options) => {
+export const getAgify: AxiosRequestData<ApiAgifyData, ApiAgifyResponseData> = (data, options) => {
   return request(
     {
       params: data,
