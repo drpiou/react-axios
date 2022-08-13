@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
   AxiosConfig,
   AxiosOptions,
@@ -116,7 +118,7 @@ const useAxios = <A extends UseAxiosList, AO = unknown, BD = unknown>(
           await options?.onAfter(response, before, apiOptions, requestOptions);
         }
 
-        return response as AxiosResponseRequest;
+        return response;
       };
     });
   }, [api, isMounted, options]);
