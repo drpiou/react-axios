@@ -1,9 +1,11 @@
-import { AxiosOptions, AxiosResponseRequest } from '@drpiou/axios';
+import { AxiosOptions, AxiosRequestResponse } from '@drpiou/axios';
 import { log } from '@drpiou/ts-utils';
 import { mapValues, uniq, values } from 'lodash';
 import React, { useState } from 'react';
+import { UseAxiosApiOptions } from '../lib';
+import { ApiAgifyData } from './api/getAgify';
 import './App.css';
-import { useApi } from './hooks/useApi';
+import { useApi, UseApiOptions } from './hooks/useApi';
 
 const optionsTest: AxiosOptions = {
   test: true,
@@ -28,14 +30,14 @@ const errorResult = {
 const App = (): JSX.Element => {
   const api = useApi();
 
-  const [result1, setResult1] = useState<{ response: AxiosResponseRequest | undefined; expected: boolean }>();
-  const [result2, setResult2] = useState<{ response: AxiosResponseRequest | undefined; expected: boolean }>();
-  const [result3, setResult3] = useState<{ response: AxiosResponseRequest | undefined; expected: boolean }>();
-  const [result4, setResult4] = useState<{ response: AxiosResponseRequest | undefined; expected: boolean }>();
-  const [result5, setResult5] = useState<{ response: AxiosResponseRequest | undefined; expected: boolean }>();
-  const [result6, setResult6] = useState<{ response: AxiosResponseRequest | undefined; expected: boolean }>();
+  const [result1, setResult1] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
+  const [result2, setResult2] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
+  const [result3, setResult3] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
+  const [result4, setResult4] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
+  const [result5, setResult5] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
+  const [result6, setResult6] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
 
-  const expected = (response: AxiosResponseRequest, expectedValues: any): boolean => {
+  const expected = (response: AxiosRequestResponse, expectedValues: any): boolean => {
     return (
       uniq(
         values(
@@ -51,36 +53,47 @@ const App = (): JSX.Element => {
     );
   };
 
-  const handleClick1 = (): void => {
-    void api.getAgify({ name: 'test' }, { message: 'test' }).then((response) => {
-      log('success-api', { response });
+  const data: ApiAgifyData = { name: 'test' };
+  const options: UseAxiosApiOptions<UseApiOptions> = { message: 'test' };
 
-      setResult1({ response, expected: response ? expected(response, defaultResult) : false });
-    });
+  const handleClick1 = (): void => {
+    void api
+      .getAgify(data)
+      .start(options)
+      .then((response) => {
+        log('success-api', { response });
+
+        setResult1({ response, expected: response ? expected(response, defaultResult) : false });
+      });
   };
 
   const handleClick2 = (): void => {
-    void api.getAgify({ name: 'test' }, { message: 'test' }, { ...optionsTest, testStatus: 200 }).then((response) => {
-      log('success-test', { response });
+    void api
+      .getAgify(data, { ...optionsTest, testStatus: 200 })
+      .start(options)
+      .then((response) => {
+        log('success-test', { response });
 
-      setResult2({ response, expected: response ? expected(response, defaultResult) : false });
-    });
+        setResult2({ response, expected: response ? expected(response, defaultResult) : false });
+      });
   };
 
   const handleClick3 = (): void => {
-    void api.getAgify({ name: 'test' }, { message: 'test' }, { testCancel: true }).then((response) => {
+    const request = api.getAgify(data, { testCancel: true });
+
+    void request.start(options).then((response) => {
       log('abort-api', { response });
 
       setResult3({ response, expected: response ? expected(response, { ...errorResult, isCancel: true }) : false });
     });
 
-    // TODO: change useAxios to decorate start() instead of prepareAxios()
-    // request.abort();
+    request.abort();
   };
 
   const handleClick4 = (): void => {
     void api
-      .getAgify({ name: 'test' }, { message: 'test' }, { ...optionsTest, testStatus: 200, testCancel: true, testSleep: 5000 })
+      .getAgify(data, { ...optionsTest, testStatus: 200, testCancel: true, testSleep: 5000 })
+      .start(options)
       .then((response) => {
         log('abort-test', { response });
 
@@ -89,20 +102,20 @@ const App = (): JSX.Element => {
   };
 
   const handleClick5 = (): void => {
-    void api.getAgify({ name: 'test' }, { message: 'test' }, { ...optionsTest, testStatus: 404 }).then((response) => {
-      log('error-test', { response });
+    void api
+      .getAgify(data, { ...optionsTest, testStatus: 404 })
+      .start(options)
+      .then((response) => {
+        log('error-test', { response });
 
-      setResult5({ response, expected: response ? expected(response, { ...errorResult, code: 404 }) : false });
-    });
+        setResult5({ response, expected: response ? expected(response, { ...errorResult, code: 404 }) : false });
+      });
   };
 
   const handleClick6 = (): void => {
     void api
-      .getAgify(
-        { name: 'test' },
-        { message: 'test' },
-        { ...optionsTest, testStatus: 200, testNetworkError: true, testSleep: 1000 },
-      )
+      .getAgify(data, { ...optionsTest, testStatus: 200, testNetworkError: true, testSleep: 1000 })
+      .start(options)
       .then((response) => {
         log('network-error-test', { response });
 
@@ -146,7 +159,7 @@ const App = (): JSX.Element => {
   );
 };
 
-const Result = (props: { response: AxiosResponseRequest | undefined; expected: boolean }): JSX.Element => {
+const Result = (props: { response: AxiosRequestResponse | undefined; expected: boolean }): JSX.Element => {
   const { response, expected } = props;
 
   return (
