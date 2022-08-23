@@ -240,10 +240,9 @@
     "@babel/helper-validator-identifier" "^7.18.6"
     to-fast-properties "^2.0.0"
 
-"@drpiou/axios@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@drpiou/axios/-/axios-0.0.3.tgz#6ccc5f04e443510ad641dac210f9191e8b276b06"
-  integrity sha512-v6DOsOY8ylW4yj/08sED2fuuoBeoTsGkSozD1lPBXjSKGKSL4vMaxLch5qYKcGkgthRbuyLiYrnxLpEtLxp72A==
+"@drpiou/axios@https://github.com/drpiou/axios#develop":
+  version "0.0.4"
+  resolved "https://github.com/drpiou/axios#eecd082e5ea0621d4bd90de09021278a08eca1b2"
 
 "@drpiou/react-utils@0.0.3":
   version "0.0.3"

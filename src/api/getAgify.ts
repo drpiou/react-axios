@@ -1,4 +1,4 @@
-import { AxiosRequestData } from '@drpiou/axios';
+import { AxiosOptions, AxiosRequest } from '@drpiou/axios';
 import { request } from './request';
 
 export type ApiAgifyData = {
@@ -7,7 +7,7 @@ export type ApiAgifyData = {
 
 export type ApiAgifyResponseData = Record<string, unknown>;
 
-export const getAgify: AxiosRequestData<ApiAgifyData, ApiAgifyResponseData> = (data, options) => {
+export const getAgify = (data: ApiAgifyData, options?: AxiosOptions): AxiosRequest<ApiAgifyResponseData> => {
   return request(
     {
       params: data,

@@ -11,14 +11,14 @@ type Before = {
   message: string;
 };
 
-const onBefore: UseAxiosCallbackBefore<UseApiOptions, Before> = (apiOptions, configOptions) => {
-  log('useApi@onBefore:', { apiOptions, configOptions });
+const onBefore: UseAxiosCallbackBefore<UseApiOptions, Before> = (apiOptions) => {
+  log('useApi@onBefore:', { apiOptions });
 
   return { message: apiOptions?.message || '' };
 };
 
-const onAfter: UseAxiosCallbackAfter<UseApiOptions, Before> = (response, before, apiOptions, configOptions) => {
-  log('useApi@onAfter:', { response, before, apiOptions, configOptions });
+const onAfter: UseAxiosCallbackAfter<UseApiOptions, Before> = (response, before, apiOptions) => {
+  log('useApi@onAfter:', { response, before, apiOptions });
 };
 
 export const useApi = (): UseAxios<ApiList, UseApiOptions> => {

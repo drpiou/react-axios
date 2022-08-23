@@ -1,12 +1,9 @@
 export type {
   UseAxiosOptions,
-  UseAxiosRequestOptions,
+  UseAxiosApiOptions,
   UseAxiosCallbackAfter,
   UseAxiosCallbackBefore,
   UseAxiosRequest,
-  UseAxiosRequestData,
-  UseAxiosRequestDataOptional,
-  UseAxiosRequestDataVoid,
   UseAxios,
   UseAxiosList,
 } from './hooks/useAxios';
