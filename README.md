@@ -34,7 +34,7 @@ yarn add @drpiou/react-axios
 ### Peer Dependencies
 
 ```shell
-yarn add @drpiou/axios@^0.0.2
+yarn add @drpiou/axios@0.0.4
 ```
 
 ## Usage
@@ -72,11 +72,11 @@ export type UseApiOptions = {
   message?: string;
 };
 
-type Before = {
+export type UseApiOptionsBefore = {
   message: string;
 };
 
-const onBefore: UseAxiosCallbackBefore<UseApiOptions, Before> = (
+const onBefore: UseAxiosCallbackBefore<UseApiOptions, UseApiOptionsBefore> = (
   apiOptions,
 ) => {
   console.log('useApi@onBefore:', { apiOptions });
@@ -84,7 +84,7 @@ const onBefore: UseAxiosCallbackBefore<UseApiOptions, Before> = (
   return { message: apiOptions?.message || '' };
 };
 
-const onAfter: UseAxiosCallbackAfter<UseApiOptions, Before> = (
+const onAfter: UseAxiosCallbackAfter<UseApiOptions, UseApiOptionsBefore> = (
   response,
   before,
   apiOptions,
@@ -96,9 +96,9 @@ const onAfter: UseAxiosCallbackAfter<UseApiOptions, Before> = (
   });
 };
 
-export const useApi = (): UseAxios<ApiList, UseApiOptions> => {
-  const options = useMemo(() => ({ onBefore, onAfter }), []);
+const options = { onBefore, onAfter };
 
+export const useApi = (): UseAxios<ApiList, UseApiOptions> => {
   return useAxios(api, options);
 };
 ```
