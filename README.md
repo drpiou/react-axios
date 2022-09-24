@@ -122,6 +122,7 @@ export const api = {
 ### `api/getAgify.ts`
 
 ```typescript
+import { AxiosOptions, AxiosRequest } from '@drpiou/axios';
 import { request } from './request';
 
 export type ApiAgifyData = {
@@ -140,6 +141,20 @@ export const getAgify = (
     },
     options,
   );
+};
+```
+
+### `api/getAgifyAsync.ts`
+
+```typescript
+import { AxiosOptions, AxiosRequest } from '@drpiou/axios';
+import { ApiAgifyData, ApiAgifyResponseData, getAgify } from './getAgify';
+
+export const getAgifyAsync = async (
+  data: ApiAgifyData,
+  options?: AxiosOptions,
+): Promise<AxiosRequest<ApiAgifyResponseData>> => {
+  return getAgify(data, options);
 };
 ```
 
@@ -181,6 +196,12 @@ const MyComponent = (): JSX.Element => {
       .start({ autoAbort: true, message: 'test' });
   };
 
+  const handlePressAsync = (): void => {
+    void api.getAgifyAsync({ name: 'test' }).then((request) => {
+      void request.start({ autoAbort: true, message: 'test' });
+    });
+  };
+
   return <div onClick={handlePress} />;
 };
 
@@ -190,7 +211,11 @@ export default MyComponent;
 ## Documentation
 
 ```typescript
-import { AxiosRequest, AxiosRequestAbort, AxiosRequestResponse } from '@drpiou/axios';
+import {
+  AxiosRequest,
+  AxiosRequestAbort,
+  AxiosRequestResponse,
+} from '@drpiou/axios';
 
 export type useAxios = <A extends UseAxiosList, AO = unknown, BD = unknown>(
   api: A,
@@ -240,8 +265,15 @@ export type UseAxios<A, AO = unknown> = {
     ...args: infer P
   ) => AxiosRequest<infer SD, infer ED, infer CD>
     ? (...args: P) => UseAxiosRequest<AO, SD, ED, CD>
+    : A[K] extends (
+        ...args: infer P
+      ) => Promise<AxiosRequest<infer SD, infer ED, infer CD>>
+    ? (...args: P) => Promise<UseAxiosRequest<AO, SD, ED, CD>>
     : never;
 };
 
-export type UseAxiosList = Record<string, (...args: any[]) => AxiosRequest>;
+export type UseAxiosList = Record<
+  string,
+  (...args: any[]) => AxiosRequest | Promise<AxiosRequest>
+>;
 ```
