@@ -13,8 +13,8 @@ export declare type UseAxiosRequest<AO = unknown, SD = any, ED = any, CD = any> 
     abort: AxiosRequestAbort;
 };
 export declare type UseAxios<A, AO = unknown> = {
-    [K in keyof A]: A[K] extends (...args: infer P) => AxiosRequest<infer SD, infer ED, infer CD> ? (...args: P) => UseAxiosRequest<AO, SD, ED, CD> : never;
+    [K in keyof A]: A[K] extends (...args: infer P) => AxiosRequest<infer SD, infer ED, infer CD> ? (...args: P) => UseAxiosRequest<AO, SD, ED, CD> : A[K] extends (...args: infer P) => Promise<AxiosRequest<infer SD, infer ED, infer CD>> ? (...args: P) => Promise<UseAxiosRequest<AO, SD, ED, CD>> : never;
 };
-export declare type UseAxiosList = Record<string, (...args: any[]) => AxiosRequest>;
+export declare type UseAxiosList = Record<string, (...args: any[]) => AxiosRequest | Promise<AxiosRequest>>;
 declare const useAxios: <A extends UseAxiosList, AO = unknown, BD = unknown>(api: A, options?: UseAxiosOptions<AO, BD, any, any, any> | undefined) => UseAxios<A, AO>;
 export default useAxios;

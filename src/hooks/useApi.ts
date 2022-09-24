@@ -1,5 +1,4 @@
 import { log } from '@drpiou/ts-utils';
-import { useMemo } from 'react';
 import { useAxios, UseAxios, UseAxiosCallbackAfter, UseAxiosCallbackBefore } from '../../lib';
 import { api, ApiList } from '../api';
 
@@ -7,22 +6,22 @@ export type UseApiOptions = {
   message?: string;
 };
 
-type Before = {
+export type UseApiOptionsBefore = {
   message: string;
 };
 
-const onBefore: UseAxiosCallbackBefore<UseApiOptions, Before> = (apiOptions) => {
+const onBefore: UseAxiosCallbackBefore<UseApiOptions, UseApiOptionsBefore> = (apiOptions) => {
   log('useApi@onBefore:', { apiOptions });
 
   return { message: apiOptions?.message || '' };
 };
 
-const onAfter: UseAxiosCallbackAfter<UseApiOptions, Before> = (response, before, apiOptions) => {
+const onAfter: UseAxiosCallbackAfter<UseApiOptions, UseApiOptionsBefore> = (response, before, apiOptions) => {
   log('useApi@onAfter:', { response, before, apiOptions });
 };
 
-export const useApi = (): UseAxios<ApiList, UseApiOptions> => {
-  const options = useMemo(() => ({ onBefore, onAfter }), []);
+const options = { onBefore, onAfter };
 
+export const useApi = (): UseAxios<ApiList, UseApiOptions> => {
   return useAxios(api, options);
 };

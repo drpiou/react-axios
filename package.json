@@ -1,6 +1,6 @@
 {
   "name": "@drpiou/react-axios",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Provides some React utilities that wrap the @drpiou/axios package.",
   "keywords": [],
   "author": "Alex <hello@drpiou.dev>",

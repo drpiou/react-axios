@@ -36,6 +36,7 @@ const App = (): JSX.Element => {
   const [result4, setResult4] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
   const [result5, setResult5] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
   const [result6, setResult6] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
+  const [result7, setResult7] = useState<{ response: AxiosRequestResponse | undefined; expected: boolean }>();
 
   const expected = (response: AxiosRequestResponse, expectedValues: any): boolean => {
     return (
@@ -57,6 +58,8 @@ const App = (): JSX.Element => {
   const options: UseAxiosApiOptions<UseApiOptions> = { message: 'test' };
 
   const handleClick1 = (): void => {
+    setResult1(undefined);
+
     void api
       .getAgify(data)
       .start(options)
@@ -68,6 +71,8 @@ const App = (): JSX.Element => {
   };
 
   const handleClick2 = (): void => {
+    setResult2(undefined);
+
     void api
       .getAgify(data, { ...optionsTest, testStatus: 200 })
       .start(options)
@@ -79,6 +84,8 @@ const App = (): JSX.Element => {
   };
 
   const handleClick3 = (): void => {
+    setResult3(undefined);
+
     const request = api.getAgify(data, { testCancel: true });
 
     void request.start(options).then((response) => {
@@ -91,6 +98,8 @@ const App = (): JSX.Element => {
   };
 
   const handleClick4 = (): void => {
+    setResult4(undefined);
+
     void api
       .getAgify(data, { ...optionsTest, testStatus: 200, testCancel: true, testSleep: 5000 })
       .start(options)
@@ -102,6 +111,8 @@ const App = (): JSX.Element => {
   };
 
   const handleClick5 = (): void => {
+    setResult5(undefined);
+
     void api
       .getAgify(data, { ...optionsTest, testStatus: 404 })
       .start(options)
@@ -113,6 +124,8 @@ const App = (): JSX.Element => {
   };
 
   const handleClick6 = (): void => {
+    setResult6(undefined);
+
     void api
       .getAgify(data, { ...optionsTest, testStatus: 200, testNetworkError: true, testSleep: 1000 })
       .start(options)
@@ -121,6 +134,18 @@ const App = (): JSX.Element => {
 
         setResult6({ response, expected: response ? expected(response, { ...errorResult, isNetworkError: true }) : false });
       });
+  };
+
+  const handleClick7 = (): void => {
+    setResult7(undefined);
+
+    void api.getAgifyAsync(data).then((request) => {
+      void request.start(options).then((response) => {
+        log('success-api-async', { response });
+
+        setResult7({ response, expected: response ? expected(response, defaultResult) : false });
+      });
+    });
   };
 
   return (
@@ -154,6 +179,11 @@ const App = (): JSX.Element => {
         <button onClick={handleClick6}>network-error-test</button>
 
         {result6 && <Result {...result6} />}
+      </div>
+      <div className={'card'}>
+        <button onClick={handleClick7}>success-api-async</button>
+
+        {result7 && <Result {...result7} />}
       </div>
     </>
   );
